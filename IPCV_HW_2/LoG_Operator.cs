@@ -25,15 +25,30 @@ namespace IPCV_HW_2
             GetK();
             Operate(x, y);
             PrintMask();
+            CheckMask();
 
         }
 
+        //required to interactively scale results such that they are reasonable
         private void GetK()
         {
             K = 50;
-            while(Math.Abs(GetSlidesValue(0, 0)) < (Scale/2)*(Scale/2))
+            while(Math.Abs(GetSlidesValue(0, 0)) < (Scale/3)*(Scale/3))
                 K += 10;
 
+        }
+
+        private void CheckMask()
+        {
+            var total = 0;
+            for (int i = 0; i < Scale; i++)
+            {
+                for (int j = 0; j < Scale; j++)
+                {
+                    total += Mask[i, j];
+                }
+            }
+            Console.WriteLine(String.Format("Sum of mask: {0}", total));
         }
 
         private void PrintMask()
@@ -42,7 +57,7 @@ namespace IPCV_HW_2
             {
                 for (int j = 0; j < Scale; j++)
                 {
-                    Console.Write(String.Format("|{0}|", Mask[i,j]));
+                    Console.Write(String.Format("|{0}|", Mask[i, j]));
                 }
                 Console.WriteLine("");
             }
@@ -71,20 +86,7 @@ namespace IPCV_HW_2
         private void SetCell(int i, int j, int xval, int yval)
         {
             var value = GetSlidesValue(xval, yval);
-            //var value = GetWebValue(xval, yval);
             Mask[i, j] = (int)value;
-        }
-
-        private double GetWebValue(int xval, int yval)
-        {
-            int rsquared = xval * xval + yval * yval;
-
-            var firstpart = -1/(Math.PI*Math.Pow(Sigma, 4));
-            var secondpart = 1 - (rsquared/(2.0*Sigma*Sigma));
-            var power = -1 * (rsquared / (2 * Sigma * Sigma));
-            var thirdpart = Math.Pow(Math.E, power);
-            var value = K * firstpart*secondpart*thirdpart;
-            return value;
         }
 
         private double GetSlidesValue(int xval, int yval)

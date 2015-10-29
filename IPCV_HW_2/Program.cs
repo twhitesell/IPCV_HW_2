@@ -28,36 +28,19 @@ namespace IPCV_HW_2
         {
             Write("Welcome to LoG Utility!");
 
-            //GetInputFilename();
-            //GetOutputFilename();
-            var sigma = GetSigma();
-            int m = GetM(sigma);
-
-            var op = new LoG_Operator(m, sigma);
+            GetInputFilename();
+            GetOutputFilename();
 
             var continueRun = Reprocess();
 
             while (continueRun)
             {
                 //RefreshParameters();
-
-                sigma = GetSigma();
-                m = GetM(sigma);
-
-                op = new LoG_Operator(m, sigma);
+                ProcessImage();
                 continueRun = Reprocess();
             }
 
             SignalGrandExit();
-
-        }
-
-        private static int GetM(double sigma)
-        {
-            int res = (int) (6*sigma);
-            if (res <= 3) return 3;
-            if (res%2 == 0) return res + 1;
-            return res;
 
         }
 
@@ -72,12 +55,32 @@ namespace IPCV_HW_2
         {
             try
             {
+
                 // Open an Image file, and get its bitmap
                 var currentdir = Directory.GetCurrentDirectory();
                 Image myImage = Image.FromFile(inputfile);
                 var bitmap = new Bitmap(myImage);
+                Bitmap gray = GetGrayscaleImage(bitmap);
+                //create log filter
 
-                //create output bitmap of he same size
+                var sigma = GetSigma();
+                int m = GetM(sigma);
+
+                var op = new LoG_Operator(m, sigma);
+
+
+                //create image large enough to convolve based on grayscale image
+                Bitmap paddedGray = PadImageForConvolution(gray, m);
+
+
+                //get convolved image output
+                Bitmap convolved = ConvolveImage(paddedGray, op);
+
+                //do zero crossing filter ==> output bitmap of he same size as myImage
+
+
+
+
                 var output = new Bitmap(size.Width, size.Height);
 
                 for (int x = 0; x < myImage.Width; x++)
@@ -85,7 +88,6 @@ namespace IPCV_HW_2
                     for (int y = 0; y < myImage.Height; y++)
                     {
                         var pi = bitmap.GetPixel(x, y);
-                        CreateBinaryImage(pi, output, x, y);
                     }
                 }
 
@@ -101,37 +103,44 @@ namespace IPCV_HW_2
             }
         }
 
+        private static Bitmap ConvolveImage(Bitmap paddedGray, LoG_Operator op)
+        {
+            throw new NotImplementedException();
+        }
 
-
+        private static Bitmap PadImageForConvolution(Bitmap gray, int i)
+        {
+            throw new NotImplementedException();
+        }
 
 
         /// <summary>
         /// counts occurrences of each possible intensity
         /// </summary>
-        private static void ObtainEachPixelColor()
+        private static Bitmap GetGrayscaleImage(Bitmap colorImage)
         {
 
-            Image myImage = Image.FromFile(inputfile);
-            var bitmap = new Bitmap(myImage);
 
-            size = bitmap.Size;
+            var bmp = new Bitmap(colorImage.Width, colorImage.Height);
+            //size = colorImage.Size;
 
             //index across each position in the 2-d image
-            for (int x = 0; x < myImage.Width; x++)
+            for (int x = 0; x < colorImage.Width; x++)
             {
-                for (int y = 0; y < myImage.Height; y++)
+                for (int y = 0; y < colorImage.Height; y++)
                 {
-                    var pi = bitmap.GetPixel(x, y);
+                    var pi = colorImage.GetPixel(x, y);
+                    SetGrayscaleForPixel(pi, bmp, x, y);
                 }
             }
+            return bmp;
         }
 
 
         /// <summary>
         /// requires the argb color of the pixel, the output image to set into, and the position of each pixel to operate upon
-        /// results in the output Bitmap object
         /// </summary>
-        private static void CreateBinaryImage(Color pi, Bitmap output, int x, int y)
+        private static void SetBinaryPixel(Color pi, Bitmap output, int x, int y)
         {
             int grayscale = GetGrayscale(pi);
             //if the grayscale value meets some criteria
@@ -146,12 +155,19 @@ namespace IPCV_HW_2
             }
         }
 
+        /// <summary>
+        /// sets 1 pixel to grayscale
+        /// </summary>
+        private static void SetGrayscaleForPixel(Color pi, Bitmap output, int x, int y)
+        {
+            int grayscale = GetGrayscale(pi);
+            output.SetPixel(x, y, Color.FromArgb(pi.A, grayscale, grayscale, grayscale));
+        }
+
 
         /// <summary>
         /// probably some threshold or zero crossing detection
         /// </summary>
-        /// <param name="grayscale"></param>
-        /// <returns></returns>
         private static bool conditionIsTrue(int grayscale)
         {
             return grayscale > lowthreshold && grayscale < highthreshold;
@@ -160,11 +176,10 @@ namespace IPCV_HW_2
         /// <summary>
         /// here we get the grayscale intensity
         /// </summary>
-        /// <param name="pi"></param>
-        /// <returns></returns>
         private static int GetGrayscale(Color pi)
         {
-            return (pi.R + pi.G + pi.B) / 3;
+            // 0.2989, 0.5870, 0.1140.
+            return (int)(0.2989* pi.R + 0.5870* pi.G + 0.1140* pi.B);
         }
 
 
@@ -179,6 +194,19 @@ namespace IPCV_HW_2
 
 
         #region Utility
+
+
+
+
+
+        private static int GetM(double sigma)
+        {
+            int res = (int)(6 * sigma);
+            if (res <= 3) return 3;
+            if (res % 2 == 0) return res + 1;
+            return res;
+
+        }
 
 
         private static double GetSigma()
