@@ -70,11 +70,12 @@ namespace IPCV_HW_2
 
 
                 //create image large enough to convolve based on grayscale image
-                Bitmap paddedGray = PadImageForConvolution(gray, m);
-                paddedGray.Save(currentdir + "\\" + "paddedGray.bmp");
+                var paddedArray = PadImageForConvolution(gray, m);
+                //paddedGray.Save(currentdir + "\\" + "paddedGray.bmp");
 
                 //get convolved image output
-                Bitmap convolved = ConvolveImage(paddedGray, op);
+                var stuf = op.Convolve(gray, paddedArray);
+
 
                 //do zero crossing filter ==> output bitmap of he same size as myImage
 
@@ -102,37 +103,39 @@ namespace IPCV_HW_2
                 return false;
             }
         }
+        
 
-        private static Bitmap ConvolveImage(Bitmap paddedGray, LoG_Operator op)
+
+        /// <summary>
+        /// pads image by m pixels all the way around
+        /// </summary>
+        private static int[,] PadImageForConvolution(Bitmap gray, int m)
         {
-            throw new NotImplementedException();
-        }
-
-        private static Bitmap PadImageForConvolution(Bitmap gray, int m)
-        {
-
-            var bmp = new Bitmap(gray.Width+(m*2), gray.Height+(m*2));
-            for (int x = 0; x < bmp.Width; x++)
+            var width = gray.Width + (m*2);
+            var height = gray.Height + (m*2);
+            int[,] arr = new int[width, height];
+            for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < bmp.Height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    bmp.SetPixel(x, y, Color.Black);
+                    arr[x, y] = 0;
                 }
             }
             int i = 0, j = 0;
-            for (int x = m + 1; x < gray.Width +m; x++)
+            for (int x = m + 1; x < gray.Width + m; x++)
             {
                 for (int y = m + 1; y < gray.Height + m; y++)
                 {
-                    bmp.SetPixel(x, y, gray.GetPixel(i, j));
+                    arr[x, y] = GetGrayscale(gray.GetPixel(i, j));
                     j++;
                 }
                 j = 0;
                 i++;
 
+
             }
 
-            return bmp;
+            return arr;
         }
 
 

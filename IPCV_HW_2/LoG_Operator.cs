@@ -14,9 +14,21 @@ namespace IPCV_HW_2
         private int K { get; set; }
         private int Scale { get; set; }
         private double Sigma { get; set; }
-        
+        private int M { get; set; }
+
+
+
+
+
+        #region Construct
+
+
+
+
+
         public LoG_Operator(int m, double sigma)
         {
+            M = m;
             int x = -m;
             int y = -m;
            
@@ -159,6 +171,52 @@ namespace IPCV_HW_2
             var power = -1 * (rsquared/(2*Sigma*Sigma));
             var secondpart = Math.Pow(Math.E, power);
             var value = K*firstpart*secondpart;
+            return value;
+        }
+
+
+
+#endregion
+
+
+
+        public int[,] Convolve(Bitmap original, int[,] padded)
+        {
+            int[,] arr = new int[original.Width, original.Height];
+            int i = 0, j = 0;
+            for (int x = M + 1; x < original.Width + M; x++)
+            {
+                for (int y = M + 1; y < original.Height + M; y++)
+                {
+                    arr[i, j] = ConvolveAtPoint(padded, x, y);
+                    j++;
+                }
+                j = 0;
+                i++;
+            }
+            return arr;
+        }
+
+
+
+        private int ConvolveAtPoint(int[,] padded, int x, int y)
+        {
+            
+            var value = 0;
+            for (int i = 0; i < Scale; i++)
+            {
+                for (int j = 0; j < Scale; j++)
+                {
+                    value += padded[x - M + i, y - M + j] * Mask[i,j];
+
+
+
+
+                }
+            }
+
+
+
             return value;
         }
     }
