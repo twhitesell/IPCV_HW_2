@@ -33,25 +33,32 @@ namespace IPCV_HW_2
             var sigma = GetSigma();
             int m = GetM(sigma);
 
+            var op = new LoG_Operator(m, sigma);
 
-            var op = new LoG_Operator(m, sigma, 50);
-
-            var continueRun = false;
+            var continueRun = Reprocess();
 
             while (continueRun)
             {
                 //RefreshParameters();
-                continueRun = ProcessImage() && Reprocess();
+
+                sigma = GetSigma();
+                m = GetM(sigma);
+
+                op = new LoG_Operator(m, sigma);
+                continueRun = Reprocess();
             }
 
             SignalGrandExit();
 
         }
 
-        private static int GetM(int sigma)
+        private static int GetM(double sigma)
         {
-           return  6 * sigma + 1;
-            
+            int res = (int) (6*sigma);
+            if (res <= 3) return 3;
+            if (res%2 == 0) return res + 1;
+            return res;
+
         }
 
         #region PROCESS_IMAGE
@@ -108,7 +115,6 @@ namespace IPCV_HW_2
             var bitmap = new Bitmap(myImage);
 
             size = bitmap.Size;
-            pixelcount = size.Height * size.Width;
 
             //index across each position in the 2-d image
             for (int x = 0; x < myImage.Width; x++)
@@ -175,17 +181,17 @@ namespace IPCV_HW_2
         #region Utility
 
 
-        private static int GetSigma()
+        private static double GetSigma()
         {
             while (true)
             {
 
-                Write("Enter value of Sigma (1 - 10):");
+                Write("Enter value of Sigma (0.0 - 5.0):");
                 var c = Console.ReadLine();
-                int v;
-                if (Int32.TryParse(c, v))
+                double v;
+                if (double.TryParse(c, out v))
                 {
-                    if (v > 0 && v < 11)
+                    if (v > 0 && v <= 5)
                         return v;
                 }
 
@@ -199,6 +205,7 @@ namespace IPCV_HW_2
         /// </summary>
         private static bool Reprocess()
         {
+            Write("");
             Write("Enter 'Q' to quit, or any other key to continue.");
             var key = Console.ReadKey(false);
             if (key.KeyChar == 'Q' || key.KeyChar == 'q')
