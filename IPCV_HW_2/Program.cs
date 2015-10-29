@@ -9,18 +9,15 @@ using System.IO;
 
 namespace IPCV_HW_2
 {
-    class Program_2_4
+    public class Program
     {
-
-
         private static bool continueRun = true;
 
         private static string inputfile;
         private static string outputfile;
         private static int lowthreshold = 0;
         private static int highthreshold = 255;
-
-        private static int pixelcount;
+        
         private static Size size;
 
 
@@ -37,7 +34,7 @@ namespace IPCV_HW_2
             int m = GetM(sigma);
 
 
-            var op = new LoGOperator(m, sigma, 50);
+            var op = new LoG_Operator(m, sigma, 50);
 
             var continueRun = false;
 
@@ -51,8 +48,11 @@ namespace IPCV_HW_2
 
         }
 
-      
-      
+        private static int GetM(int sigma)
+        {
+           return  6 * sigma + 1;
+            
+        }
 
         #region PROCESS_IMAGE
 
@@ -109,7 +109,7 @@ namespace IPCV_HW_2
 
             size = bitmap.Size;
             pixelcount = size.Height * size.Width;
-           
+
             //index across each position in the 2-d image
             for (int x = 0; x < myImage.Width; x++)
             {
@@ -175,7 +175,7 @@ namespace IPCV_HW_2
         #region Utility
 
 
-        private int GetSigma()
+        private static int GetSigma()
         {
             while (true)
             {
