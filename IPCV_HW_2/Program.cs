@@ -35,7 +35,6 @@ namespace IPCV_HW_2
 
             while (continueRun)
             {
-                //RefreshParameters();
                 ProcessImage();
                 continueRun = Reprocess();
             }
@@ -78,20 +77,7 @@ namespace IPCV_HW_2
 
 
                 //do zero crossing filter ==> output bitmap of he same size as myImage
-
-
-
-
                 var output = new ZeroCrossingOperator().OperateOverArrayWithSize(stuf, bitmap.Width, bitmap.Height);
-
-                for (int x = 0; x < myImage.Width; x++)
-                {
-                    for (int y = 0; y < myImage.Height; y++)
-                    {
-                        var pi = bitmap.GetPixel(x, y);
-                    }
-                }
-
 
                 output.Save(currentdir + "\\" + outputfile);
                 Write(String.Format("File: {0} generated ok.", outputfile));
@@ -180,6 +166,7 @@ namespace IPCV_HW_2
             }
         }
 
+
         /// <summary>
         /// sets 1 pixel to grayscale
         /// </summary>
@@ -197,6 +184,7 @@ namespace IPCV_HW_2
         {
             return grayscale > lowthreshold && grayscale < highthreshold;
         }
+
 
         /// <summary>
         /// here we get the grayscale intensity
