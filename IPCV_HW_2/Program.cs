@@ -82,7 +82,7 @@ namespace IPCV_HW_2
 
 
 
-                var output = new Bitmap(size.Width, size.Height);
+                var output = new ZeroCrossingOperator().OperateOverArrayWithSize(stuf, bitmap.Width, bitmap.Height);
 
                 for (int x = 0; x < myImage.Width; x++)
                 {
