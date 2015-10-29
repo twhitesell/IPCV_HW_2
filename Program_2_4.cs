@@ -31,13 +31,17 @@ namespace ConsoleApplication1
         /// </summary>
         static void Main(string[] args)
         {
-            Write("Welcome to Histogram utility!");
+            Write("Welcome to LoG Utility!");
 
-            GetInputFilename();
-            GetOutputFilename();
+            //GetInputFilename();
+            //GetOutputFilename();
+            var sigma = GetSigma();
+            int m = GetM(sigma);
 
 
-            continueRun = true;
+            var op = new LoGOperator(m, sigma, 50);
+
+            var continueRun = false;
 
             while (continueRun)
             {
@@ -49,22 +53,8 @@ namespace ConsoleApplication1
 
         }
 
-        private static void SignalGrandExit()
-        {
-            int b = 1;
-            for (int i = b; b < 10000; i++)
-            {
-                string s = "";
-                for (int a = 0; a < b; a++)
-                {
-                    s += "*";
-                }
-
-                b *= 2;
-                Write(s);
-            }
-
-        }
+      
+      
 
         #region PROCESS_IMAGE
 
@@ -152,6 +142,12 @@ namespace ConsoleApplication1
             }
         }
 
+
+        /// <summary>
+        /// probably some threshold or zero crossing detection
+        /// </summary>
+        /// <param name="grayscale"></param>
+        /// <returns></returns>
         private static bool conditionIsTrue(int grayscale)
         {
             return grayscale > lowthreshold && grayscale < highthreshold;
@@ -173,6 +169,33 @@ namespace ConsoleApplication1
         #endregion
 
 
+
+
+
+
+
+        #region Utility
+
+
+        private int GetSigma()
+        {
+            while (true)
+            {
+
+                Write("Enter value of Sigma (1 - 10):");
+                var c = Console.ReadLine();
+                int v;
+                if (Int32.TryParse(c, v))
+                {
+                    if (v > 0 && v < 11)
+                        return v;
+                }
+
+            }
+        }
+
+
+
         /// <summary>
         /// determines whether or not we continue
         /// </summary>
@@ -185,11 +208,6 @@ namespace ConsoleApplication1
             return true;
         }
 
-
-
-
-
-        #region Utility
 
 
 
@@ -237,6 +255,23 @@ namespace ConsoleApplication1
 
 
 
+
+        private static void SignalGrandExit()
+        {
+            int b = 1;
+            for (int i = b; b < 10000; i++)
+            {
+                string s = "";
+                for (int a = 0; a < b; a++)
+                {
+                    s += "*";
+                }
+
+                b *= 2;
+                Write(s);
+            }
+
+        }
 
 
         #endregion
