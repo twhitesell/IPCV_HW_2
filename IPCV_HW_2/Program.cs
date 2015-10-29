@@ -31,7 +31,7 @@ namespace IPCV_HW_2
             GetInputFilename();
             GetOutputFilename();
 
-            var continueRun = Reprocess();
+            var continueRun = true;
 
             while (continueRun)
             {
@@ -71,7 +71,7 @@ namespace IPCV_HW_2
 
                 //create image large enough to convolve based on grayscale image
                 Bitmap paddedGray = PadImageForConvolution(gray, m);
-
+                paddedGray.Save(currentdir + "\\" + "paddedGray.bmp");
 
                 //get convolved image output
                 Bitmap convolved = ConvolveImage(paddedGray, op);
@@ -108,9 +108,31 @@ namespace IPCV_HW_2
             throw new NotImplementedException();
         }
 
-        private static Bitmap PadImageForConvolution(Bitmap gray, int i)
+        private static Bitmap PadImageForConvolution(Bitmap gray, int m)
         {
-            throw new NotImplementedException();
+
+            var bmp = new Bitmap(gray.Width+(m*2), gray.Height+(m*2));
+            for (int x = 0; x < bmp.Width; x++)
+            {
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    bmp.SetPixel(x, y, Color.Black);
+                }
+            }
+            int i = 0, j = 0;
+            for (int x = m + 1; x < gray.Width +m; x++)
+            {
+                for (int y = m + 1; y < gray.Height + m; y++)
+                {
+                    bmp.SetPixel(x, y, gray.GetPixel(i, j));
+                    j++;
+                }
+                j = 0;
+                i++;
+
+            }
+
+            return bmp;
         }
 
 

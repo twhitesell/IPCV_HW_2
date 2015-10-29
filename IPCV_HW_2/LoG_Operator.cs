@@ -24,22 +24,69 @@ namespace IPCV_HW_2
             Scale = (m*2) + 1;
             GetK();
             Operate(x, y);
-            PrintMask();
-            CheckMask();
+            var total = CheckMask();
+            while (total != 0)
+            {
+                ScaleMask(total);
+                total = CheckMask();
+            }
 
+        }
+
+        private void ScaleMask(int total)
+        {
+            if (total > 0)
+            {
+                ReduceMask(total);
+            }
+            if (total < 0)
+            {
+                EnhanceMask(total);
+            }
+
+
+        }
+
+        private void EnhanceMask(int total)
+        {
+            for (int i = 0; i < Scale; i++)
+            {
+                for (int j = 0; j < Scale; j++)
+                {
+                    if (Mask[i, j] < 0)
+                    {
+                        Mask[i, j] = (int)(Mask[i,j] * .9);
+                    }
+                }
+            }
+        }
+
+        private void ReduceMask(int total)
+        {
+            for (int i = 0; i < Scale; i++)
+            {
+                for (int j = 0; j < Scale; j++)
+                {
+                    if (Mask[i,j] > 0)
+                    {
+                        Mask[i, j] = (int)(Mask[i,j] * .9);
+                    }
+                }
+            }
         }
 
         //required to interactively scale results such that they are reasonable
         private void GetK()
         {
-            K = 50;
-            while(Math.Abs(GetSlidesValue(0, 0)) < (Scale/3)*(Scale/3))
+            K = 10;
+            while(Math.Abs(GetSlidesValue(0, 0)) < (Scale))
                 K += 10;
 
         }
 
-        private void CheckMask()
+        private int CheckMask()
         {
+            PrintMask();
             var total = 0;
             for (int i = 0; i < Scale; i++)
             {
@@ -48,7 +95,23 @@ namespace IPCV_HW_2
                     total += Mask[i, j];
                 }
             }
-            Console.WriteLine(String.Format("Sum of mask: {0}", total));
+            if (total > 0 && total < 10)
+            {
+                var center = (Scale - 1)/2;
+                Mask[center, center] -= total;
+                return 0;
+            }
+            else if (total < 0 && total > -10)
+            {
+                var center = (Scale - 1) / 2;
+                Mask[center, center] += total;
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine(String.Format("Sum of mask: {0}", total));
+                return total;
+            }
         }
 
         private void PrintMask()
