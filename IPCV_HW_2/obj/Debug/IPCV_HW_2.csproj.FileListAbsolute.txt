@@ -1,6 +1,6 @@
 C:\SchoolStuff\ImageProcessingComputerVision\Homeworks\homework2\IPCV_HW_2\IPCV_HW_2\bin\Debug\IPCV_HW_2.exe.config
-C:\SchoolStuff\ImageProcessingComputerVision\Homeworks\homework2\IPCV_HW_2\IPCV_HW_2\obj\Debug\IPCV_HW_2.csprojResolveAssemblyReference.cache
 C:\SchoolStuff\ImageProcessingComputerVision\Homeworks\homework2\IPCV_HW_2\IPCV_HW_2\bin\Debug\IPCV_HW_2.exe
 C:\SchoolStuff\ImageProcessingComputerVision\Homeworks\homework2\IPCV_HW_2\IPCV_HW_2\bin\Debug\IPCV_HW_2.pdb
 C:\SchoolStuff\ImageProcessingComputerVision\Homeworks\homework2\IPCV_HW_2\IPCV_HW_2\obj\Debug\IPCV_HW_2.exe
 C:\SchoolStuff\ImageProcessingComputerVision\Homeworks\homework2\IPCV_HW_2\IPCV_HW_2\obj\Debug\IPCV_HW_2.pdb
+C:\SchoolStuff\ImageProcessingComputerVision\Homeworks\homework2\IPCV_HW_2\IPCV_HW_2\obj\Debug\IPCV_HW_2.csprojResolveAssemblyReference.cache

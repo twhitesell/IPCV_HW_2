@@ -35,7 +35,7 @@ namespace IPCV_HW_2
             Sigma = sigma;
             Scale = (m*2) + 1;
             GetK();
-            Operate(x, y);
+            CreateOperator(x, y);
             var total = CheckMask();
             while (total != 0)
             {
@@ -59,6 +59,9 @@ namespace IPCV_HW_2
 
         }
 
+        /// <summary>
+        /// moves closer to 0 coefficient without skew
+        /// </summary>
         private void EnhanceMask(int total)
         {
             for (int i = 0; i < Scale; i++)
@@ -67,12 +70,15 @@ namespace IPCV_HW_2
                 {
                     if (Mask[i, j] < 0)
                     {
-                        Mask[i, j] = (int)(Mask[i,j] * .9);
+                        Mask[i, j] = (int)(Mask[i,j] * .95);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// moves closer to 0 coeffiicent sum without skew
+        /// </summary>
         private void ReduceMask(int total)
         {
             for (int i = 0; i < Scale; i++)
@@ -81,7 +87,7 @@ namespace IPCV_HW_2
                 {
                     if (Mask[i,j] > 0)
                     {
-                        Mask[i, j] = (int)(Mask[i,j] * .9);
+                        Mask[i, j] = (int)(Mask[i,j] * .95);
                     }
                 }
             }
@@ -90,15 +96,18 @@ namespace IPCV_HW_2
         //required to interactively scale results such that they are reasonable
         private void GetK()
         {
-            K = 10;
-            while(Math.Abs(GetSlidesValue(0, 0)) < (Scale))
+            K = 50;
+            while(Math.Abs(GetSlidesValue(0, 0)) < (Scale*2))
                 K += 10;
 
         }
 
+        /// <summary>
+        /// ensures that coefficients sum to 0
+        /// </summary>
+        /// <returns></returns>
         private int CheckMask()
         {
-            PrintMask();
             var total = 0;
             for (int i = 0; i < Scale; i++)
             {
@@ -107,25 +116,34 @@ namespace IPCV_HW_2
                     total += Mask[i, j];
                 }
             }
-            if (total > 0 && total < 10)
+            if (total > 0 && total < 5)
             {
                 var center = (Scale - 1)/2;
                 Mask[center, center] -= total;
+                Console.WriteLine(String.Format("Sum of mask: {0}", 0));
+                Console.WriteLine(String.Format("Mask:"));
+                PrintMask();
                 return 0;
             }
-            else if (total < 0 && total > -10)
+            else if (total < 0 && total > -5)
             {
                 var center = (Scale - 1) / 2;
                 Mask[center, center] += total;
+                Console.WriteLine(String.Format("Sum of mask: {0}", 0));
+                Console.WriteLine(String.Format("Mask:\n"));
+                PrintMask();
                 return 0;
             }
             else
             {
-                Console.WriteLine(String.Format("Sum of mask: {0}", total));
                 return total;
             }
         }
 
+
+        /// <summary>
+        /// prints the mask
+        /// </summary>
         private void PrintMask()
         {
             for (int i = 0; i < Scale; i++)
@@ -139,7 +157,10 @@ namespace IPCV_HW_2
         }
 
 
-        private void Operate(int x, int y)
+        /// <summary>
+        /// instantiates size and fills matrix operator
+        /// </summary>
+        private void CreateOperator(int x, int y)
         {
             var xorig = x;
             //x and y represent top left
@@ -164,6 +185,8 @@ namespace IPCV_HW_2
             Mask[i, j] = (int)value;
         }
 
+
+
         private double GetSlidesValue(int xval, int yval)
         {
             int rsquared = (xval*xval) + (yval*yval);
@@ -179,7 +202,9 @@ namespace IPCV_HW_2
 #endregion
 
 
-
+        /// <summary>
+        /// performs overall convolution
+        /// </summary>
         public int[,] Convolve(Bitmap original, int[,] padded)
         {
             int[,] arr = new int[original.Width, original.Height];
@@ -198,7 +223,9 @@ namespace IPCV_HW_2
         }
 
 
-
+        /// <summary>
+        /// performs convolution at point
+        /// </summary>
         private int ConvolveAtPoint(int[,] padded, int x, int y)
         {
             
@@ -208,10 +235,7 @@ namespace IPCV_HW_2
                 for (int j = 0; j < Scale; j++)
                 {
                     value += padded[x - M + i, y - M + j] * Mask[i,j];
-
-
-
-
+                    
                 }
             }
 

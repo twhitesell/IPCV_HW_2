@@ -15,8 +15,6 @@ namespace IPCV_HW_2
 
         private static string inputfile;
         private static string outputfile;
-        private static int lowthreshold = 0;
-        private static int highthreshold = 255;
         
         private static Size size;
 
@@ -43,7 +41,13 @@ namespace IPCV_HW_2
 
         }
 
+
+
+
+
         #region PROCESS_IMAGE
+
+
 
 
 
@@ -61,10 +65,8 @@ namespace IPCV_HW_2
                 var bitmap = new Bitmap(myImage);
                 Bitmap gray = GetGrayscaleImage(bitmap);
                 //create log filter
-
                 var sigma = GetSigma();
                 int m = GetM(sigma);
-
                 var op = new LoG_Operator(m, sigma);
 
 
@@ -89,7 +91,6 @@ namespace IPCV_HW_2
                 return false;
             }
         }
-        
 
 
         /// <summary>
@@ -131,7 +132,6 @@ namespace IPCV_HW_2
         private static Bitmap GetGrayscaleImage(Bitmap colorImage)
         {
 
-
             var bmp = new Bitmap(colorImage.Width, colorImage.Height);
             //size = colorImage.Size;
 
@@ -149,40 +149,12 @@ namespace IPCV_HW_2
 
 
         /// <summary>
-        /// requires the argb color of the pixel, the output image to set into, and the position of each pixel to operate upon
-        /// </summary>
-        private static void SetBinaryPixel(Color pi, Bitmap output, int x, int y)
-        {
-            int grayscale = GetGrayscale(pi);
-            //if the grayscale value meets some criteria
-            if (conditionIsTrue(grayscale))
-            {
-                //set the corresponding output pixel
-                output.SetPixel(x, y, Color.White);
-            }
-            else
-            {
-                output.SetPixel(x, y, Color.Black);
-            }
-        }
-
-
-        /// <summary>
         /// sets 1 pixel to grayscale
         /// </summary>
         private static void SetGrayscaleForPixel(Color pi, Bitmap output, int x, int y)
         {
             int grayscale = GetGrayscale(pi);
             output.SetPixel(x, y, Color.FromArgb(pi.A, grayscale, grayscale, grayscale));
-        }
-
-
-        /// <summary>
-        /// probably some threshold or zero crossing detection
-        /// </summary>
-        private static bool conditionIsTrue(int grayscale)
-        {
-            return grayscale > lowthreshold && grayscale < highthreshold;
         }
 
 
@@ -194,6 +166,8 @@ namespace IPCV_HW_2
             // 0.2989, 0.5870, 0.1140.
             return (int)(0.2989* pi.R + 0.5870* pi.G + 0.1140* pi.B);
         }
+
+
 
 
 
@@ -212,6 +186,11 @@ namespace IPCV_HW_2
 
 
 
+        /// <summary>
+        /// gets a minimal value for m
+        /// </summary>
+        /// <param name="sigma"></param>
+        /// <returns></returns>
         private static int GetM(double sigma)
         {
             int res = (int)(6 * sigma);
@@ -222,6 +201,11 @@ namespace IPCV_HW_2
         }
 
 
+
+        /// <summary>
+        /// requests & validates user input for sigma
+        /// </summary>
+        /// <returns></returns>
         private static double GetSigma()
         {
             while (true)
@@ -253,8 +237,7 @@ namespace IPCV_HW_2
                 return false;
             return true;
         }
-
-
+        
 
 
         /// <summary>
@@ -265,10 +248,7 @@ namespace IPCV_HW_2
             Write("Please enter the output file name only:");
             outputfile = Console.ReadLine();
         }
-
-
-
-
+        
 
 
         /// <summary>
@@ -291,6 +271,7 @@ namespace IPCV_HW_2
         }
 
 
+
         /// <summary>
         /// prints to console
         /// </summary>
@@ -301,7 +282,9 @@ namespace IPCV_HW_2
 
 
 
-
+        /// <summary>
+        /// prints outro
+        /// </summary>
         private static void SignalGrandExit()
         {
             int b = 1;
@@ -320,7 +303,15 @@ namespace IPCV_HW_2
         }
 
 
+
+
+
         #endregion
+
+
+
+
+
     }
 
 }
